@@ -115,17 +115,21 @@ display();
 const shuffleFruits = () => {
   let result = [];
 
-  // ATTENTION: сейчас при клике вы запустите бесконечный цикл и браузер зависнет
   while (fruits.length > 0) {
-    // TODO: допишите функцию перемешивания массива
-    //
-    // Подсказка: находим случайный элемент из fruits, используя getRandomInt
+    // функция перемешивания массива
+    // находим случайный элемент из fruits, используя getRandomInt
+    let r = getRandomInt(0, fruits.length - 1);
+    let elem = fruits.splice(r, 1)[0];
+    result.push(elem);
     // вырезаем его из fruits и вставляем в result.
     // ex.: [1, 2, 3], [] => [1, 3], [2] => [3], [2, 1] => [], [2, 1, 3]
     // (массив fruits будет уменьшатся, а result заполняться)
   }
-
-  fruits = result;
+  if (JSON.stringify(fruits) === JSON.stringify(result)) {
+    alert('Порядок элементов не изменился!')
+  } else {
+    fruits = result;
+  }
 };
 
 shuffleButton.addEventListener('click', () => {
@@ -137,15 +141,31 @@ shuffleButton.addEventListener('click', () => {
 
 // фильтрация массива
 const filterFruits = () => {
-  fruits.filter((item) => {
-    // TODO: допишите функцию
+  //fruits = JSON.parse(fruitsJSON);
+  let result = [];
+  let minWeight = document.getElementById('minValue').value;
+  let maxWeight = document.getElementById('maxValue').value;
+  if ((minWeight === '') || (maxWeight === '')) {
+    alert('Одно или несколько полей незаполнены.')
+  
+  } else {
+  result = fruits.filter((item) => {
+    if ((item.weight >= minWeight) && (item.weight <= maxWeight)) {
+      return true;
+    } else {
+      return false;
+    }
   });
-};
+  fruits = result;
+}
+}
 
 filterButton.addEventListener('click', () => {
   filterFruits();
   display();
 });
+
+
 
 /*** СОРТИРОВКА ***/
 
