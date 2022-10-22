@@ -11,6 +11,24 @@ const colorInput = document.querySelector('.color__input'); // поле с на�
 const weightInput = document.querySelector('.weight__input'); // поле с весом
 const addActionButton = document.querySelector('.add__action__btn'); // кнопка добавления
 
+// функция реализующая введение в input только числа
+const channHandler = e => {
+  const value = e.value
+  e.value = value.replace(/\D/g,'')
+}
+
+// массив цветов (ключи соответсвуют классам)
+const classArray = [{
+  "fruit_violet": "фиолетовый",
+  "fruit_green": "зеленый",
+  "fruit_carmazin": "розово-красный",
+  "fruit_yellow": "желтый",
+  "fruit_lightbrown": "светло-коричневый",
+  "fruit_black": "черный",
+  "fruit_orange": "оранжевый",
+  "fruit_red": "красный"
+}];
+
 // список фруктов в JSON формате
 let fruitsJSON = `[
   {"kind": "Мангустин", "color": "фиолетовый", "weight": 13},
@@ -20,19 +38,71 @@ let fruitsJSON = `[
   {"kind": "Тамаринд", "color": "светло-коричневый", "weight": 22}
 ]`;
 
+// генерация случайного числа в заданном диапазоне
+const getRandomInt = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 // преобразование JSON в объект JavaScript
 let fruits = JSON.parse(fruitsJSON);
 
-/*** ОТОБРАЖЕНИЕ ***/
+// /*** ОТОБРАЖЕНИЕ ***/
+//функция поиска ключа по значению (нужна для заливки соответсвующим цветом рамку элемента)
+Object.prototype.getKeyByValue = function (value, objs) {
+
+  // защита от циклических ссылок
+  if (!objs)
+    objs = [];
+
+  for (var prop in this) {
+    if (this.hasOwnProperty(prop)) {
+      if (this[prop] === value) {
+        return prop;
+      } else if (typeof this[prop] === "object" && objs.indexOf(this[prop]) == -1) {
+        objs.push(this[prop]);
+        var res = this[prop].getKeyByValue(value, objs);
+        if (res)
+          return res;
+
+      }
+
+    }
+  }
+}
 
 // отрисовка карточек
 const display = () => {
-  // TODO: очищаем fruitsList от вложенных элементов,
+  // очищаем fruitsList от вложенных элементов,
   // чтобы заполнить актуальными данными из fruits
+  while (fruitsList.firstChild) fruitsList.removeChild(fruitsList.firstChild);
+
 
   for (let i = 0; i < fruits.length; i++) {
     // TODO: формируем новый элемент <li> при помощи document.createElement,
+    const valArr = fruits[i].color;
+    let li = document.createElement('li');
+    li.className = 'fruit__item ' + classArray.getKeyByValue(valArr);
+    // li_1.innerHTML = 'Первый элемент';
     // и добавляем в конец списка fruitsList при помощи document.appendChild
+    fruitsList.appendChild(li);
+    let div = document.createElement('div');
+    div.className = 'fruit__info';
+    li.appendChild(div);
+    let div_1 = document.createElement('div');
+    let index = 'index: ' + i;
+    div_1.appendChild(document.createTextNode(index));
+    div.appendChild(div_1);
+    let div_2 = document.createElement('div');
+    div_2.appendChild(document.createTextNode('kind: ' + fruits[i].kind));
+    div.appendChild(div_2);
+    let div_3 = document.createElement('div');
+    div_3.appendChild(document.createTextNode('color: ' + fruits[i].color));
+    div.appendChild(div_3);
+    let div_4 = document.createElement('div');
+    div_4.appendChild(document.createTextNode('weight: ' + fruits[i].weight));
+    div.appendChild(div_4);
+
+
   }
 };
 
@@ -40,11 +110,6 @@ const display = () => {
 display();
 
 /*** ПЕРЕМЕШИВАНИЕ ***/
-
-// генерация случайного числа в заданном диапазоне
-const getRandomInt = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
 
 // перемешивание массива
 const shuffleFruits = () => {
